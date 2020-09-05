@@ -3,40 +3,159 @@
         PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
-<generatorConfiguration>
-    <classPathEntry location="/Program Files/IBM/SQLLIB/java/db2java.zip" />
+<!--配置官方文档: http://www.mybatis.org/generator/configreference/xmlconfig.html-->
+<!--使用官方文档: http://www.mybatis.org/generator/generatedobjects/exampleClassUsage.html-->
 
+<generatorConfiguration>
+    <!--0或者1个<properties>标签，用于指定全局配置文件，下面可以通过占位符的形式读取<properties>指定文件中的值。-->
+    <!-- 引入配置文件 -->
+    <properties resource="application.properties"/>
+
+    <!--0或者N个<classPathEntry>标签，<classPathEntry>只有一个location属性，用于指定数据源驱动包（jar或者zip）的绝对路径，具体选择什么驱动包取决于连接什么类型的数据源。-->
+    <classPathEntry location="/Users/w.rajer/.m2/repository/mysql/mysql-connector-java/5.1.46/mysql-connector-java-5.1.46.jar" />
+
+    <!--1或者N个<context>标签，用于运行时的解析模式和具体的代码生成行为，所以这个标签里面的配置是最重要的。-->
     <context id="DB2Tables" targetRuntime="MyBatis3">
-        <jdbcConnection driverClass="COM.ibm.db2.jdbc.app.DB2Driver"
-                        connectionURL="jdbc:db2:TEST"
-                        userId="db2admin"
-                        password="db2admin">
+
+        <!--<plugin>标签是<context>的子标签，用于引入一些插件对代码生成的一些特性进行扩展，该标签只包含一个type属性，用于指定org.mybatis.generator.api.Plugin接口的实现类-->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+
+
+        <!--用于控制生成的实体的注释内容-->
+<!--        <commentGenerator>-->
+        <commentGenerator type="org.example.generator.MysqlCommentGenerator">
+            <!--是否生成注释	false-->
+            <property name="suppressAllComments" value="false"/>
+            <!--是否在注释中添加生成的时间戳	false-->
+            <property name="suppressDate" value="false"/>
+            <!--配合suppressDate使用，指定输出时间戳的格式	java.util.Date#toString()-->
+            <!--If the suppressAllComments option is true, this option will be ignored.-->
+            <!--If the suppressDate option is true, this option will be ignored.-->
+            <!--            <property name="dateFormat" value=""/>-->
+            <!--是否输出表和列的Comment信息	false-->
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+
+
+        <!--用于指定数据源的连接信息-->
+        <jdbcConnection driverClass="${spring.datasource.driverClassName}"
+                        connectionURL="${spring.datasource.url}"
+                        userId="${spring.datasource.username}"
+                        password="${spring.datasource.password}">
+            <!--高版本的 mysql-connector-java 需要设置 nullCatalogMeansCurrent=true-->
+            <!--            <property name="nullCatalogMeansCurrent" value="true"/>-->
         </jdbcConnection>
 
-        <javaTypeResolver >
+        <!--用于解析和计算数据库列类型和Java类型的映射关系-->
+<!--        <javaTypeResolver>-->
+        <javaTypeResolver type="org.example.generator.MysqlJavaTypeResolver">
+            <!--是否强制把所有的数字类型强制使用java.math.BigDecimal类型表示	false-->
             <property name="forceBigDecimals" value="false" />
+            <!--是否支持JSR310，主要是JSR310的新日期类型	false-->
+            <!-- 如果useJSR310Types属性设置为true，那么生成代码的时候类型映射关系如下（主要针对日期时间类型）：
+
+            数据库（JDBC）类型	Java类型
+            DATE	java.time.LocalDate
+            TIME	java.time.LocalTime
+            TIMESTAMP	java.time.LocalDateTime
+            TIME_WITH_TIMEZONE	java.time.OffsetTime
+            TIMESTAMP_WITH_TIMEZONE	java.time.OffsetDateTime-->
+            <property name="useJSR310Types" value="false"/>
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="test.model" targetProject="\MBGTestProject\src">
+        <!--<javaModelGenerator标签>标签是<context>的子标签，主要用于控制实体（Model）类的代码生成行为-->
+        <javaModelGenerator targetPackage="org.example.model" targetProject="src/main/java">
+            <!--是否生成一个带有所有字段属性的构造函数	false	MyBatis3Kotlin模式下忽略此属性配置-->
+            <property name="constructorBased" value="false"/>
+            <!--是否允许通过Schema生成子包	false	如果为true，例如包名为club.throwable，如果Schema为xyz，那么实体类文件最终会生成在club.throwable.xyz目录-->
             <property name="enableSubPackages" value="true" />
+            <!--生成的伴随实体类的Example类的包名-->
+            <!--            <property name="exampleTargetPackage" value=""/>-->
+            <!--生成的伴随实体类的Example类文件相对于项目（根目录）的位置-->
+            <!--            <property name="exampleTargetProject" value=""/>-->
+            <!--是否不可变	false	如果为true，则不会生成Setter方法，所有字段都使用final修饰，提供一个带有所有字段属性的构造函数-->
+            <property name="immutable" value="false"/>
+            <!--为生成的实体类添加父类	-	通过value指定父类的全类名即可-->
+            <!--            <property name="rootClass" value=""/>-->
+            <!--Setter方法是否对字符串类型进行一次trim操作	false-->
             <property name="trimStrings" value="true" />
         </javaModelGenerator>
 
-        <sqlMapGenerator targetPackage="test.xml"  targetProject="\MBGTestProject\src">
+        <!--<sqlMapGenerator>标签是<context>的子标签，主要用于控制XML映射文件的代码生成行为-->
+        <sqlMapGenerator targetPackage="mapper"  targetProject="src/main/resources">
+            <!--是否允许通过Schema生成子包	false-->
             <property name="enableSubPackages" value="true" />
         </sqlMapGenerator>
 
-        <javaClientGenerator type="XMLMAPPER" targetPackage="test.dao"  targetProject="\MBGTestProject\src">
+        <!--<javaClientGenerator>标签是<context>的子标签，主要用于控制Mapper接口的代码生成行为-->
+        <!--type属性的可选值如下：
+        ANNOTATEDMAPPER：Mapper接口生成的时候依赖于注解和SqlProviders（也就是纯注解实现），不会生成XML映射文件。
+        XMLMAPPER：Mapper接口生成接口方法，对应的实现代码生成在XML映射文件中（也就是纯映射文件实现）。
+        MIXEDMAPPER：Mapper接口生成的时候复杂的方法实现生成在XML映射文件中，而简单的实现通过注解和SqlProviders实现（也就是注解和映射文件混合实现）。-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="org.example.dao"  targetProject="src/main/java">
+            <!--是否允许通过Schema生成子包	false	如果为true，例如包名为club.throwable，如果Schema为xyz，那么Mapper接口文件最终会生成在club.throwable.xyz目录-->
             <property name="enableSubPackages" value="true" />
+            <!--是否通过SQL Builder生成动态SQL	false-->
+            <property name="useLegacyBuilder" value="false"/>
+            <!--为生成的Mapper接口添加父接口	-	通过value指定父接口的全类名即可-->
+            <!--            <property name="rootInterface" value=""/>-->
         </javaClientGenerator>
 
-        <table schema="DB2ADMIN" tableName="ALLTYPES" domainObjectName="Customer" >
-            <property name="useActualColumnNames" value="true"/>
-            <generatedKey column="ID" sqlStatement="DB2" identity="true" />
-            <columnOverride column="DATE_FIELD" property="startDate" />
-            <ignoreColumn column="FRED" />
-            <columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />
-        </table>
 
+
+        <!--<table>标签是<context>的子标签，主要用于配置要生成代码的数据库表格，定制一些代码生成行为等等-->
+        <table schema="test" tableName="tb_test" domainObjectName="testEntity" >
+            <!--是否为实体类生成一个带有所有字段的构造函数	false	执行引擎为MyBatis3Kotlin的时候此属性忽略-->
+            <property name="constructorBased" value="false"/>
+            <!--是否在运行时忽略别名	false	如果为true，则不会在生成表的时候把schema和catalog作为表的前缀-->
+            <property name="ignoreQualifiersAtRuntime" value="false"/>
+            <!--实体类是否不可变	false	执行引擎为MyBatis3Kotlin的时候此属性忽略-->
+            <property name="immutable" value="false"/>
+            <!--是否仅仅生成实体类	false-->
+            <property name="modelOnly" value="false"/>
+            <!--如果配置此属性，则实体类会继承此指定的超类	-	如果有主键属性会把主键属性在超类生成-->
+            <!--            <property name="rootClass" value=""/>-->
+            <!--如果配置此属性，则实体类会实现此指定的接口	-	执行引擎为MyBatis3Kotlin或者MyBatis3DynamicSql的时候此属性忽略-->
+            <!--            <property name="rootInterface" value=""/>-->
+            <!--指定运行时的Catalog	-	当生成表和运行时的表的Catalog不一样的时候可以使用该属性进行配置-->
+            <!--            <property name="runtimeCatalog" value=""/>-->
+            <!--指定运行时的Schema	-	当生成表和运行时的表的Schema不一样的时候可以使用该属性进行配置-->
+            <!--            <property name="runtimeSchema" value=""/>-->
+            <!--指定运行时的表名称	-	当生成表和运行时的表的表名称不一样的时候可以使用该属性进行配置-->
+            <!--            <property name="runtimeTableName" value=""/>-->
+            <!--指定字句内容添加到selectAll()方法的order by子句之中	-	执行引擎为MyBatis3Simple的时候此属性才适用-->
+            <!--            <property name="selectAllOrderByClause" value=""/>-->
+            <!--实体类的字符串类型属性会做trim处理	-	执行引擎为MyBatis3Kotlin的时候此属性忽略-->
+            <!--            <property name="trimStrings" value=""/>-->
+            <!--是否使用列名作为实体类的属性名	false	-->
+            <property name="useActualColumnNames" value="true"/>
+            <!--XML映射文件中生成的ResultMap使用列索引定义而不是列名称	false	执行引擎为MyBatis3Kotlin或者MyBatis3DynamicSql的时候此属性忽略-->
+            <property name="useColumnIndexes" value="false"/>
+            <!--是否把列名和列备注拼接起来生成实体类属性名	false	-->
+            <property name="useCompoundPropertyNames" value="false"/>
+            <!--0或1个<generatedKey>用于指定主键生成的规则，指定此标签后会生成一个<selectKey>标签-->
+            <!-- column：指定主键列 -->
+            <!-- sqlStatement：查询主键的SQL语句，例如填写了MySql，则使用SELECT LAST_INSERT_ID() -->
+            <!-- type：可选值为pre或者post，pre指定selectKey标签的order为BEFORE，post指定selectKey标签的order为AFTER -->
+            <!-- identity：true的时候，指定selectKey标签的order为AFTER -->
+            <generatedKey column="id" sqlStatement="DB2" identity="true" />
+            <!--0或1个<domainObjectRenamingRule>用于指定实体类重命名规则-->
+            <!-- searchString中正则命中的实体类名部分会替换为replaceString -->
+            <!-- 例如 SysUser会变成User -->
+            <!-- 例如 SysUserMapper会变成UserMapper -->
+            <!--            <domainObjectRenamingRule searchString="" replaceString="" />-->
+            <!-- searchString中正则命中的列名部分会替换为replaceString -->
+            <!--            <columnRenamingRule searchString="" replaceString="" />-->
+            <!--0或N个<columnOverride>用于指定具体列的覆盖映射规则-->
+            <!-- column：指定要覆盖配置的列 -->
+            <!-- property：指定要覆盖配置的属性 -->
+            <!-- delimitedColumnName：是否为列名添加定界符，例如`{column}` -->
+            <!-- isGeneratedAlways：是否一定生成此列 -->
+            <!--            <columnOverride column="DATE_FIELD" property="startDate" javaType="" jdbcType="" typeHandler="" delimitedColumnName="" isGeneratedAlways=""/>-->
+            <!--0或N个<ignoreColumn>用于指定忽略生成的列-->
+            <!--            <ignoreColumn column="FRED" delimitedColumnName="false"/>-->
+        </table>
     </context>
+
+
 </generatorConfiguration>
