@@ -17,8 +17,27 @@
     <!--1或者N个<context>标签，用于运行时的解析模式和具体的代码生成行为，所以这个标签里面的配置是最重要的。-->
     <context id="DB2Tables" targetRuntime="MyBatis3">
 
+        <!--
+            自动识别数据库关键字，默认false，如果设置为true，根据SqlReservedWords中定义的关键字列表；
+           一般保留默认值，遇到数据库关键字（Java关键字），使用columnOverride覆盖
+           beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号；
+       -->
+        <property name="autoDelimitKeywords" value="true"/>
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+
         <!--<plugin>标签是<context>的子标签，用于引入一些插件对代码生成的一些特性进行扩展，该标签只包含一个type属性，用于指定org.mybatis.generator.api.Plugin接口的实现类-->
-        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <plugin type="org.example.generator.plugin.LombokPlugin" />
+        <plugin type="org.example.generator.plugin.RenameSqlMapperClassNamePlugin">
+            <property name="searchString" value="EntityMapper"/>
+            <property name="replaceString" value="Mapper"/>
+        </plugin>
+        <plugin type="org.example.generator.plugin.RenameJavaClientClassNamePlugin">
+            <property name="searchString" value="EntityMapper"/>
+            <property name="replaceString" value="Dao"/>
+        </plugin>
 
 
         <!--用于控制生成的实体的注释内容-->
@@ -64,7 +83,7 @@
         </javaTypeResolver>
 
         <!--<javaModelGenerator标签>标签是<context>的子标签，主要用于控制实体（Model）类的代码生成行为-->
-        <javaModelGenerator targetPackage="org.example.model" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="org.example.result.model" targetProject="src/main/java">
             <!--是否生成一个带有所有字段属性的构造函数	false	MyBatis3Kotlin模式下忽略此属性配置-->
             <property name="constructorBased" value="false"/>
             <!--是否允许通过Schema生成子包	false	如果为true，例如包名为club.throwable，如果Schema为xyz，那么实体类文件最终会生成在club.throwable.xyz目录-->
@@ -82,7 +101,7 @@
         </javaModelGenerator>
 
         <!--<sqlMapGenerator>标签是<context>的子标签，主要用于控制XML映射文件的代码生成行为-->
-        <sqlMapGenerator targetPackage="mapper"  targetProject="src/main/resources">
+        <sqlMapGenerator targetPackage="org.example.result.mapper"  targetProject="src/main/java">
             <!--是否允许通过Schema生成子包	false-->
             <property name="enableSubPackages" value="true" />
         </sqlMapGenerator>
@@ -92,7 +111,7 @@
         ANNOTATEDMAPPER：Mapper接口生成的时候依赖于注解和SqlProviders（也就是纯注解实现），不会生成XML映射文件。
         XMLMAPPER：Mapper接口生成接口方法，对应的实现代码生成在XML映射文件中（也就是纯映射文件实现）。
         MIXEDMAPPER：Mapper接口生成的时候复杂的方法实现生成在XML映射文件中，而简单的实现通过注解和SqlProviders实现（也就是注解和映射文件混合实现）。-->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="org.example.dao"  targetProject="src/main/java">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="org.example.result.dao"  targetProject="src/main/java">
             <!--是否允许通过Schema生成子包	false	如果为true，例如包名为club.throwable，如果Schema为xyz，那么Mapper接口文件最终会生成在club.throwable.xyz目录-->
             <property name="enableSubPackages" value="true" />
             <!--是否通过SQL Builder生成动态SQL	false-->
@@ -104,7 +123,10 @@
 
 
         <!--<table>标签是<context>的子标签，主要用于配置要生成代码的数据库表格，定制一些代码生成行为等等-->
-        <table schema="test" tableName="tb_test" domainObjectName="testEntity" >
+        <table schema="test" tableName="tb_test" domainObjectName="testEntity"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
             <!--是否为实体类生成一个带有所有字段的构造函数	false	执行引擎为MyBatis3Kotlin的时候此属性忽略-->
             <property name="constructorBased" value="false"/>
             <!--是否在运行时忽略别名	false	如果为true，则不会在生成表的时候把schema和catalog作为表的前缀-->
@@ -128,7 +150,7 @@
             <!--实体类的字符串类型属性会做trim处理	-	执行引擎为MyBatis3Kotlin的时候此属性忽略-->
             <!--            <property name="trimStrings" value=""/>-->
             <!--是否使用列名作为实体类的属性名	false	-->
-            <property name="useActualColumnNames" value="true"/>
+            <property name="useActualColumnNames" value="false"/>
             <!--XML映射文件中生成的ResultMap使用列索引定义而不是列名称	false	执行引擎为MyBatis3Kotlin或者MyBatis3DynamicSql的时候此属性忽略-->
             <property name="useColumnIndexes" value="false"/>
             <!--是否把列名和列备注拼接起来生成实体类属性名	false	-->
