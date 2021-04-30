@@ -29,12 +29,12 @@
 
         <!--<plugin>标签是<context>的子标签，用于引入一些插件对代码生成的一些特性进行扩展，该标签只包含一个type属性，用于指定org.mybatis.generator.api.Plugin接口的实现类-->
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
-        <plugin type="org.example.generator.plugin.LombokPlugin" />
-        <plugin type="org.example.generator.plugin.RenameSqlMapperClassNamePlugin">
+        <plugin type="org.example.generator.mybatis.plugin.LombokPlugin" />
+        <plugin type="org.example.generator.mybatis.plugin.RenameSqlMapperClassNamePlugin">
             <property name="searchString" value="EntityMapper"/>
             <property name="replaceString" value="Mapper"/>
         </plugin>
-        <plugin type="org.example.generator.plugin.RenameJavaClientClassNamePlugin">
+        <plugin type="org.example.generator.mybatis.plugin.RenameJavaClientClassNamePlugin">
             <property name="searchString" value="EntityMapper"/>
             <property name="replaceString" value="Dao"/>
         </plugin>
@@ -42,7 +42,7 @@
 
         <!--用于控制生成的实体的注释内容-->
 <!--        <commentGenerator>-->
-        <commentGenerator type="org.example.generator.MysqlCommentGenerator">
+        <commentGenerator type="org.example.generator.mybatis.MysqlCommentGenerator">
             <!--是否生成注释	false-->
             <property name="suppressAllComments" value="false"/>
             <!--是否在注释中添加生成的时间戳	false-->
@@ -67,7 +67,7 @@
 
         <!--用于解析和计算数据库列类型和Java类型的映射关系-->
 <!--        <javaTypeResolver>-->
-        <javaTypeResolver type="org.example.generator.MysqlJavaTypeResolver">
+        <javaTypeResolver type="org.example.generator.mybatis.MysqlJavaTypeResolver">
             <!--是否强制把所有的数字类型强制使用java.math.BigDecimal类型表示	false-->
             <property name="forceBigDecimals" value="false" />
             <!--是否支持JSR310，主要是JSR310的新日期类型	false-->

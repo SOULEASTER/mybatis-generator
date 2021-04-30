@@ -1,4 +1,4 @@
-package org.example.generator;
+package org.example.generator.mybatis;
 
 import org.mybatis.generator.api.CommentGenerator;
 import org.mybatis.generator.api.IntrospectedColumn;
@@ -21,12 +21,12 @@ import java.util.Set;
  * 在generatorConfig.xml中的Content内添加该插件，属性addRemarkComments 必须设置为true才能生效，如下：
  * <content ...>
  *     ...
- *     <commentGenerator type="org.example.generator.MysqlCommentGenerator">
+ *     <commentGenerator type="org.example.generator.mybatis.MysqlCommentGenerator">
  *      <property name="addRemarkComments" value="true"/>
  *     </commentGenerator
  *     ...
  * </content>
- * @author 魏荣杰
+ * 
  * @date 2020/9/5 20:25
  * @since
  * @version

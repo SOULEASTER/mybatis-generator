@@ -1,4 +1,4 @@
-package org.example.generator.plugin;
+package org.example.generator.mybatis.plugin;
 
 import org.mybatis.generator.api.PluginAdapter;
 
@@ -7,7 +7,7 @@ import java.util.Properties;
 
 /**
  *
- * @author 魏荣杰
+ * 
  * @date 2020/9/6 11:49
  * @since
  * @version

@@ -1,4 +1,4 @@
-package org.example.generator;
+package org.example.generator.mybatis;
 
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
 import org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl;
@@ -8,8 +8,8 @@ import java.sql.Types;
 /**
  * 数据库类型到JAVA类型映射
  * 通过标签指定，如：
- * <javaTypeResolver type="org.example.generator.MysqlJavaTypeResolver"/>
- * @author 魏荣杰
+ * <javaTypeResolver type="org.example.generator.mybatis.MysqlJavaTypeResolver"/>
+ * 
  * @date 2020/9/5 20:29
  * @since
  * @version

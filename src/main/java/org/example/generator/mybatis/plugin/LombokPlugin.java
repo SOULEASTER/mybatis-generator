@@ -1,4 +1,4 @@
-package org.example.generator.plugin;
+package org.example.generator.mybatis.plugin;
 
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * lombok 插件
- * @author 魏荣杰
+ * 
  * @date 2020/9/5 23:35
  * @since
  * @version

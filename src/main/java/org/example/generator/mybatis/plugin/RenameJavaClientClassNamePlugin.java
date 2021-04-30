@@ -1,4 +1,4 @@
-package org.example.generator.plugin;
+package org.example.generator.mybatis.plugin;
 
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
@@ -12,12 +12,12 @@ import static org.mybatis.generator.internal.util.messages.Messages.getString;
 
 /**
  *
- * @author 魏荣杰
- * @date 2020/9/6 12:11
+ * 
+ * @date 2020/9/6 12:19
  * @since
  * @version
  */
-public class RenameSqlMapperClassNamePlugin extends PluginAdapter {
+public class RenameJavaClientClassNamePlugin extends PluginAdapter {
 
     private String replaceString;
     private Pattern pattern;
@@ -51,11 +51,10 @@ public class RenameSqlMapperClassNamePlugin extends PluginAdapter {
 
     @Override
     public void initialized(IntrospectedTable introspectedTable) {
-        String oldType = introspectedTable.getMyBatis3XmlMapperFileName();
+        String oldType = introspectedTable.getMyBatis3JavaMapperType();
         Matcher matcher = pattern.matcher(oldType);
         oldType = matcher.replaceAll(replaceString);
 
-        introspectedTable.setMyBatis3XmlMapperFileName(oldType);
+        introspectedTable.setMyBatis3JavaMapperType(oldType);
     }
-
 }
